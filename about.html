@@ -1,0 +1,105 @@
+---
+layout: page
+title: "About"
+description: "Hey, this is MerlinFeng."
+header-img: "img/post-bg-miui6.jpg"
+---
+
+<!-- Chinese Version -->
+<div class="zh post-container">
+
+    <!--copied from markdown -->
+    <blockquote><p>写写写代码，带着耳机，放松心情。<br>
+    永不停歇，追寻梦的脚步。</p>
+    </blockquote>
+    <pre style="font-size:16px;">
+            github : <a target="_blank" href="https://github.com/MerlinFeng">https://github.com/MerlinFeng</a>
+              CSDN : <a target="_blank" href="http://blog.csdn.net/Merlin_Feng">http://blog.csdn.net/Merlin_Feng</a>
+             Email : feng_qiang@yeah.net
+    </pre>
+
+    <p>
+            Hello，我是一名<strong>PHP</strong>开发者，曾就职于<a href="http://www.cloudwise.com/">云智慧（性能监控）</a>，也是人生的第一家公司，不仅技术得到提升，也对自己的目标有了更明确的规划，
+        目前就职于<a href="http://www.haodf.com/">好大夫在线</a>。
+    </p>
+    <p>
+            个人热衷于laravel的工匠精神，追求优雅的代码，也希望拓展自己的朋友圈，提高自己的交际能力，如有技术问题欢迎探讨，当然其它问题也是可以的。。。
+    </p>
+    <p>
+        最后这个博客主题是fork了<a href="https://github.com/Huxpro/huxpro.github.io">Huxpro/huxpro.github.io</a>的代码，在此深表感谢。
+    </p>
+
+    <h5>作品</h5>
+
+    <ul>
+    <li><a target="_blank" href="http://onwise.xyz/">Think Blog</a></li>
+    <li><a target="_blank" href="http://www.onwise.xyz/">Laravel Blog</a></li>
+
+    </ul>
+
+
+</div>
+
+
+
+
+
+{% if site.duoshuo_username %}
+<!-- 多说评论框 start -->
+<div class="comment">
+    <div class="ds-thread"
+    {% if site.duoshuo_username == "huxblog" %}
+        data-thread-id="1187623191091085319"
+    {% else %}
+        data-thread-key="{{site.duoshuo_username}}/about"
+    {% endif %}
+
+    data-title="{{page.title}}"
+    data-url="{{site.url}}/about/"></div>
+</div>
+<!-- 多说评论框 end -->
+
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    // dynamic User hacking by Hux
+    var _user = '{{site.duoshuo_username}}';
+
+    // duoshuo comment query.
+    var duoshuoQuery = {short_name: _user };
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+<!-- 多说公共JS代码 end -->
+{% endif %}
+
+
+{% if site.disqus_username %}
+<!-- disqus 评论框 start -->
+<div class="comment">
+    <div id="disqus_thread" class="disqus-thread">
+
+    </div>
+</div>
+<!-- disqus 评论框 end -->
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "{{site.disqus_username}}";
+    var disqus_identifier = "{{site.disqus_username}}/{{page.url}}";
+    var disqus_url = "{{site.url}}{{page.url}}";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+{% endif %}

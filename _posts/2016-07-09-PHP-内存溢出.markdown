@@ -1,0 +1,195 @@
+---
+layout:     post
+title:      "PHP内存溢出"
+subtitle:   "PHP内存溢出"
+date:       2016-07-05
+author:     "MerlinFeng"
+header-img: "img/home-bg-o.jpg"
+catalog: false
+tags:
+    - PHP
+---
+
+> “PHP内存溢出”
+
+   一．内存溢出解决方案
+
+   在做数据统计分析时，经常会遇到大数组，可能会发生内存溢出，这里分享一下我的解决方案。还是用例子来说明这个问题，如下：
+
+   假定日志中存放的记录数为500000条，那么解决方案如下：
+
+```php
+   ini_set(‘memory_limit’,’64M’);　//重置php可以使用的内存大小为64M，一般在远程主机上是不能修改php.ini文件的，只能通过程序设置。注：在safe_mode（安全模式）下，ini_set失效
+
+   set_time_limit(600);//设置超时限制为６分钟
+
+   $farr = $Uarr = $Marr = $IParr = $data = $_sub = array();
+
+   $spt = ”$@#!$”;
+
+   $root = ”/Data/webapps/VisitLog”;
+
+   $path = $dpath = $fpath = NULL;
+
+   $path = $root.”/”.date(“Y-m”,$timestamp);
+
+   $dpath = $path.”/”.date(“m-d”,$timestamp);
+
+   for($j=0;$j<24;$j++){
+
+   $v = ($j < 10) ? ”0″.$j : $j;
+
+   $gpath = $dpath.”/”.$v.”.php”;
+
+   if(!file_exists($gpath)){
+
+   continue;
+
+   } else {
+
+   $arr = file($gpath);////将文件读入数组中
+
+   array_shift($arr);//移出第一个单元－》<?php exit;?>
+
+   $farr = array_merge($farr,$arr);
+
+   unset($arr);
+
+   }
+
+   }
+
+   if(empty($this->farr)){
+
+   echo ”<p><center>没有相关记录！</center></p>”;
+
+   exit;
+
+   }
+
+   while(!empty($farr)){
+
+   $_sub = array_splice($farr, 0, 10000); //每次取出$farr中1000个
+
+   for($i=0,$scount=count($_sub);$i<$scount;$i++){
+
+   $arr = explode($spt,$_sub[$i]);
+
+   $Uarr[] = $arr[1]; //vurl
+
+   $Marr[] = $arr[2]; //vmark
+
+   $IParr[] = $arr[3].” |$nbsp;”.$arr[1]; //IP
+
+   }
+
+   unset($_sub);//用完及时销毁
+
+   }
+
+   unset($farr);
+
+```
+
+
+
+
+
+   这里，不难看出，一方面，我们要增加PHP可用内存大小，另一方面，只要我们想办法对数组进行分批处理，分而治之，将用过的变量及时销毁(unset)，一般是不会出现溢出问题的。
+
+   另外，为了节省PHP程序内存损耗，我们应当尽可能减少静态变量的使用，在需要数据重用时，可以考虑使用引用(&)。再一点就是：数据库操作完成后，要马上关闭连接；一个对象使用完，要及时调用析构函数（__destruct()）。
+
+   二．unset销毁变量并释放内存问题
+
+   PHP的unset()函数用来清除、销毁变量，不用的变量，我们可以用unset()将它销毁。但是某些时候，用unset()却无法达到销毁变 量占用的内存！我们先看一个例子：
+
+
+```php
+   <?php
+   $s=str_repeat('1',255); //产生由255个1组成的字符串
+   $m=memory_get_usage(); //获取当前占用内存
+   unset($s);
+   $mm=memory_get_usage(); //unset()后再查看当前占用内存
+   echo $m-$mm;
+   ?>
+
+```
+
+
+   最后输出unset()之前占用内存减去unset()之后占用内存，如果是正数，那么说明unset($s)已经将$s从内存中销毁(或者说，unset()之后内存占用减少了)，可是我在PHP5和windows平台下，得到的结果是：0。这是否可以说明，unset($s)并没有起 到销毁变量$s所占用内存的作用呢？我们再作下面的例子：
+
+
+```php
+   <?php
+   $s=str_repeat('1',256); //产生由256个1组成的字符串
+   $m=memory_get_usage(); //获取当前占用内存
+   unset($s);
+   $mm=memory_get_usage(); //unset()后再查看当前占用内存
+   echo $m-$mm;
+   ?>
+
+```
+
+
+   这个例子，和上面的例子几乎相同，唯一的不同是，$s由256个1组成，即比第一个例子多了一个1，得到结果是：272。这是否可以说 明，unset($s)已经将$s所占用的内存销毁了？
+   通过上面两个例子，我们可以得出以下结论：
+   结论一、unset()函数只能在变量值占用内存空间超过256字节时才会释放内存空间。
+
+   那么是不是只要变量值超过256，使用unset就可以释放内存空间呢？我们再通过一个例子来测试一下：
+
+
+```php
+
+   <?php
+   $s=str_repeat('1',256); //这和第二个例子完全相同
+   $p=&$s;
+   $m=memory_get_usage();
+   unset($s); //销毁$s
+   $mm=memory_get_usage();
+   echo $p.'<br />';
+   echo $m-$mm;
+   ?>
+
+```
+
+
+   刷新页面，我们看到第一行有256个1，第二行是0，按理说我们已经销毁了$s，而$p只是引用$s的变量，应该是没有内容了，另 外，unset($s)前后内存占用没变化！现在我们再做以下的例子：
+
+
+```php
+
+   <?php
+   $s=str_repeat('1',256); //这和第二个例子完全相同
+   $p=&$s;
+   $m=memory_get_usage();
+   $s=null; //设置$s为null
+   $mm=memory_get_usage();
+   echo $p.'<br />';
+   echo $m-$mm;
+   ?>
+
+```
+
+
+   现在刷新页面，我们看到，输出$p已经是没有内容了，unset()前后内存占用量之差是272，即已经清除了变量占用的内存。本例中的$s=null也 可以换成unset()，如下：
+
+
+```php
+
+   <?php
+   $s=str_repeat('1',256); //这和第二个例子完全相同
+   $p=&$s;
+   $m=memory_get_usage();
+   unset($s); //销毁$s
+   unset($p);
+   $mm=memory_get_usage();
+   echo $p.'<br />';
+   echo $m-$mm;
+   ?>
+
+```
+
+
+   我们将$s和$p都使用unset()销毁，这时再看内存占用量之差也是272，说明这样也可以释放内存。那么，我们可以得到另外一条结论：
+   结论二、只有当指向该变量的所有变量（如引用变量）都被销毁后，才会释放内存。
+
