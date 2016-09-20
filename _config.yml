@@ -3,8 +3,8 @@ title: MerlinFeng Blog
 SEOTitle: 冯强的博客 | Merlin Blog
 header-img: img/post-bg-os-metro.jpg
 email: feng_qiang@yeah.net
-description: "网站开发，PHP，LAMP，热爱变成的世界，一心钻研技术的人，一个沉默寡言但正在改变的人"
-keyword: "冯强，前端开发，JS，PHP,程序人生"
+description: "test mysql php nginx apache ...."
+keyword: "mysql php nginx apache"
 url: "http://www.onwise.xyz"              # your host, for absolute URL
 baseurl: ""                             # for example, '/blog' if your blog hosted on 'host/blog'
 
@@ -69,7 +69,7 @@ ga_domain: onwise.xyz
 
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
-sidebar-about-description: "写写代码，带着耳机，放松心情。追寻完美，理想的国度。"
+sidebar-about-description: "beleve your self"
 sidebar-avatar: /img/avatar-merlin.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
 
 
